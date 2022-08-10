@@ -23,6 +23,9 @@ abstract class _Names with Store {
   @observable
   Person person = Person(name: '', height: '', mass: '');
 
+  late Response data_response;
+  List<String> info = [];
+
   @action
   void getSearchedNames(Response response) {
     names = response.data['results']

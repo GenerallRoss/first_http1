@@ -1,4 +1,4 @@
-import 'package:first_http1/person.dart';
+import 'package:first_http1/person_info.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -16,7 +16,19 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _findController = TextEditingController();
-  final Names nms = Names();
+  final Names character = Names();
+  List<String> info = [];
+
+  void showPersonDetail(int index) {
+    var response = character.data_response.data['results'][index];
+    info.clear();
+    info.add(response['name'].toString());
+    info.add(response['height'].toString());
+    info.add(response['mass'].toString());
+    info.add(response['birth_year'].toString());
+    info.add(response['gender'].toString());
+    info.add(response['hair_color'].toString());
+  }
 
   void getPersonDetails() async {
     var dio = Dio();
@@ -26,13 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       response = await dio.get('https://swapi.dev/api/people/$i');
       if (response.statusCode == 200) {
-        // setState(() {
-        //   person = Person(
-        //       name: response.data['name'],
-        //       height: response.data['height'],
-        //       mass: response.data['mass']);
-        // });
-        nms.setPersonalDetail(response);
+        character.setPersonalDetail(response);
       }
     } catch (e) {
       debugPrint(e.toString());
@@ -43,7 +49,10 @@ class _MyHomePageState extends State<MyHomePage> {
     var dio = Dio();
     try {
       final response = await dio.get('https://swapi.dev/api/people/');
-      nms.getSearchedNames(response);
+      if (response.statusCode == 200) {
+        character.data_response = response;
+        character.getSearchedNames(response);
+      }
     } catch (e) {
       debugPrint(e.toString());
     }
@@ -55,7 +64,10 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       final response = await dio
           .get('https://swapi.dev/api/people/?search=${_findController.text}');
-      nms.getSearchedNames(response);
+      if (response.statusCode == 200) {
+        character.data_response = response;
+        character.getSearchedNames(response);
+      }
     } catch (e) {
       debugPrint(e.toString());
     }
@@ -94,15 +106,15 @@ class _MyHomePageState extends State<MyHomePage> {
             Observer(builder: (_) {
               return Column(
                 children: [
-                  Text('Имя: ${nms.person.name}'),
+                  Text('Имя: ${character.person.name}'),
                   const SizedBox(
                     height: 10,
                   ),
-                  Text('Рост: ${nms.person.height}'),
+                  Text('Рост: ${character.person.height}'),
                   const SizedBox(
                     height: 10,
                   ),
-                  Text('Масса: ${nms.person.mass}'),
+                  Text('Масса: ${character.person.mass}'),
                   const SizedBox(
                     height: 30,
                   ),
@@ -146,16 +158,28 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Observer(builder: (_) {
               return ListView.builder(
-                  itemCount: nms.names.length,
+                  itemCount: character.names.length,
                   primary: false,
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 10),
-                      child: (Text(
-                        nms.names[index],
-                        textAlign: TextAlign.center,
-                      )),
+                      child: TextButton(
+                        onPressed: () {
+                          showPersonDetail(index);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      PersonInfo(info: info)));
+                        },
+                        child: Text(
+                          character.names[index],
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                              color: Color.fromARGB(255, 46, 46, 46)),
+                        ),
+                      ),
                     );
                   });
             })
