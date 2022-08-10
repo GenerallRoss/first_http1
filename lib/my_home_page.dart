@@ -1,7 +1,11 @@
 import 'package:first_http1/person.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'dart:math';
+import 'package:mobx/mobx.dart';
+
+import 'mobx_var.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
@@ -11,10 +15,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Person person = Person(name: '', height: '', mass: '');
-
   final TextEditingController _findController = TextEditingController();
-  List<String> names = [];
+  final Names nms = Names();
 
   void getPersonDetails() async {
     var dio = Dio();
@@ -24,12 +26,13 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       response = await dio.get('https://swapi.dev/api/people/$i');
       if (response.statusCode == 200) {
-        setState(() {
-          person = Person(
-              name: response.data['name'],
-              height: response.data['height'],
-              mass: response.data['mass']);
-        });
+        // setState(() {
+        //   person = Person(
+        //       name: response.data['name'],
+        //       height: response.data['height'],
+        //       mass: response.data['mass']);
+        // });
+        nms.setPersonalDetail(response);
       }
     } catch (e) {
       debugPrint(e.toString());
@@ -38,24 +41,24 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void getAllNames() async {
     var dio = Dio();
-    final response = await dio.get('https://swapi.dev/api/people/');
-    var index = response.data['results'];
-    setState(() {
-      for (int i = 0; i < index.length; i++) {
-        names.add(response.data['results'][i]['name']);
-      }
-    });
+    try {
+      final response = await dio.get('https://swapi.dev/api/people/');
+      nms.getSearchedNames(response);
+    } catch (e) {
+      debugPrint(e.toString());
+    }
   }
 
+  @action
   void searchName() async {
     var dio = Dio();
-    final response = await dio
-        .get('https://swapi.dev/api/people/?search=${_findController.text}');
-    setState(() {
-      names = response.data['results']
-          .map<String>((item) => item['name'].toString())
-          .toList();
-    });
+    try {
+      final response = await dio
+          .get('https://swapi.dev/api/people/?search=${_findController.text}');
+      nms.getSearchedNames(response);
+    } catch (e) {
+      debugPrint(e.toString());
+    }
   }
 
   @override
@@ -78,9 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
               borderRadius: BorderRadius.circular(10),
               color: Colors.blueAccent,
               child: MaterialButton(
-                onPressed: () {
-                  getPersonDetails();
-                },
+                onPressed: getPersonDetails,
                 child: const Text(
                   'Показать случайного персонажа',
                   style: TextStyle(color: Colors.white),
@@ -90,18 +91,24 @@ class _MyHomePageState extends State<MyHomePage> {
             const SizedBox(
               height: 15,
             ),
-            Text('Имя: ${person.name}'),
-            const SizedBox(
-              height: 10,
-            ),
-            Text('Рост: ${person.height}'),
-            const SizedBox(
-              height: 10,
-            ),
-            Text('Масса: ${person.mass}'),
-            const SizedBox(
-              height: 30,
-            ),
+            Observer(builder: (_) {
+              return Column(
+                children: [
+                  Text('Имя: ${nms.person.name}'),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Text('Рост: ${nms.person.height}'),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Text('Масса: ${nms.person.mass}'),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                ],
+              );
+            }),
             const Text(
               'Список персонажей:',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -137,19 +144,21 @@ class _MyHomePageState extends State<MyHomePage> {
             const SizedBox(
               height: 20,
             ),
-            ListView.builder(
-                itemCount: names.length,
-                primary: false,
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: (Text(
-                      names[index],
-                      textAlign: TextAlign.center,
-                    )),
-                  );
-                })
+            Observer(builder: (_) {
+              return ListView.builder(
+                  itemCount: nms.names.length,
+                  primary: false,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: (Text(
+                        nms.names[index],
+                        textAlign: TextAlign.center,
+                      )),
+                    );
+                  });
+            })
           ],
         ),
       ),
