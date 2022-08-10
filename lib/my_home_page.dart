@@ -23,14 +23,17 @@ class _MyHomePageState extends State<MyHomePage> {
     late final Response response;
     try {
       response = await dio.get('https://swapi.dev/api/people/$i');
-      setState(() {
-        person = Person(
-            name: response.data['name'],
-            height: response.data['height'],
-            mass: response.data['mass']);
-      });
-      // ignore: empty_catches
-    } catch (e) {}
+      if (response.statusCode == 200) {
+        setState(() {
+          person = Person(
+              name: response.data['name'],
+              height: response.data['height'],
+              mass: response.data['mass']);
+        });
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    }
   }
 
   void getAllNames() async {
@@ -48,12 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
     var dio = Dio();
     final response = await dio
         .get('https://swapi.dev/api/people/?search=${_findController.text}');
-    var index = response.data['results'];
     setState(() {
-      names.clear();
-      for (int i = 0; i < index.length; i++) {
-        names.add(response.data['results'][i]['name']);
-      }
       names = response.data['results']
           .map<String>((item) => item['name'].toString())
           .toList();
@@ -144,17 +142,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 primary: false,
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
-                  // return Padding(
-                  //   padding: EdgeInsets.only(bottom: 10),
-                  //   child: (Text(names[index])),
-                  // );
-                  return Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: (Text(names[index])),
-                      )
-                    ],
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: (Text(
+                      names[index],
+                      textAlign: TextAlign.center,
+                    )),
                   );
                 })
           ],
