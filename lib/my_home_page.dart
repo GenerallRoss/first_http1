@@ -4,8 +4,7 @@ import 'package:dio/dio.dart';
 import 'dart:math';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-  final String title;
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -30,6 +29,7 @@ class _MyHomePageState extends State<MyHomePage> {
             height: response.data['height'],
             mass: response.data['mass']);
       });
+      // ignore: empty_catches
     } catch (e) {}
   }
 
