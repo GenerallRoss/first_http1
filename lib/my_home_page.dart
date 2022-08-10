@@ -22,20 +22,15 @@ class _MyHomePageState extends State<MyHomePage> {
     var rng = Random(); // Рандомный id
     int i = rng.nextInt(10) + 1;
     late final Response response;
-    bool a = true;
     try {
       response = await dio.get('https://swapi.dev/api/people/$i');
-    } catch (e) {
-      a = false;
-    }
-    if (a) {
       setState(() {
         person = Person(
             name: response.data['name'],
             height: response.data['height'],
             mass: response.data['mass']);
       });
-    }
+    } catch (e) {}
   }
 
   void getAllNames() async {
@@ -59,8 +54,9 @@ class _MyHomePageState extends State<MyHomePage> {
       for (int i = 0; i < index.length; i++) {
         names.add(response.data['results'][i]['name']);
       }
-      // var t = response.data['results'].map((item) => item['name']).toList();
-      // names = t as List<String>;
+      names = response.data['results']
+          .map<String>((item) => item['name'].toString())
+          .toList();
     });
   }
 
