@@ -54,11 +54,11 @@ mixin _$Names on _Names, Store {
   }
 
   @override
-  void setPersonalDetail(Response<dynamic> response) {
+  void setPersonDetail(Response<dynamic> response) {
     final _$actionInfo =
         _$_NamesActionController.startAction(name: '_Names.setPersonalDetail');
     try {
-      return super.setPersonalDetail(response);
+      return super.setPersonDetail(response);
     } finally {
       _$_NamesActionController.endAction(_$actionInfo);
     }

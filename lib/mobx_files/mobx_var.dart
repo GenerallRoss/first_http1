@@ -6,16 +6,6 @@ part 'mobx_var.g.dart';
 
 class Names = _Names with _$Names;
 
-// @observable
-// List<String> names = [];
-
-// @action
-// void a(Response response) {
-//   names = response.data['results']
-//       .map<String>((item) => item['name'].toString())
-//       .toList();
-// }
-
 abstract class _Names with Store {
   @observable
   List<String> names = [];
@@ -23,7 +13,7 @@ abstract class _Names with Store {
   @observable
   Person person = Person(name: '', height: '', mass: '');
 
-  late Response data_response;
+  late Response dataResponse;
   List<String> info = [];
 
   @action
@@ -34,7 +24,7 @@ abstract class _Names with Store {
   }
 
   @action
-  void setPersonalDetail(Response response) {
+  void setPersonDetail(Response response) {
     person = Person(
         name: response.data['name'],
         height: response.data['height'],

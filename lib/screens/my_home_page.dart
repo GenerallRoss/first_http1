@@ -1,11 +1,12 @@
-import 'package:first_http1/person_info.dart';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'dart:math';
 import 'package:mobx/mobx.dart';
 
-import 'mobx_var.dart';
+import '../mobx_files/mobx_var.dart';
+import 'person_info.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
@@ -20,7 +21,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List<String> info = [];
 
   void showPersonDetail(int index) {
-    var response = character.data_response.data['results'][index];
+    var response = character.dataResponse.data['results'][index];
     info.clear();
     info.add(response['name'].toString());
     info.add(response['height'].toString());
@@ -38,7 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       response = await dio.get('https://swapi.dev/api/people/$i');
       if (response.statusCode == 200) {
-        character.setPersonalDetail(response);
+        character.setPersonDetail(response);
       }
     } catch (e) {
       debugPrint(e.toString());
@@ -50,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       final response = await dio.get('https://swapi.dev/api/people/');
       if (response.statusCode == 200) {
-        character.data_response = response;
+        character.dataResponse = response;
         character.getSearchedNames(response);
       }
     } catch (e) {
@@ -65,7 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
       final response = await dio
           .get('https://swapi.dev/api/people/?search=${_findController.text}');
       if (response.statusCode == 200) {
-        character.data_response = response;
+        character.dataResponse = response;
         character.getSearchedNames(response);
       }
     } catch (e) {
