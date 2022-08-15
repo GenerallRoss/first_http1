@@ -34,7 +34,7 @@ class _MyHomePageState extends State<MyHomePage> {
               color: Colors.blueAccent,
               child: MaterialButton(
                 onPressed: () {
-                  character.getPersonDetails(character);
+                  character.getPersonDetails();
                 },
                 child: const Text(
                   'Показать случайного персонажа',
@@ -93,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 IconButton(
                     onPressed: () {
-                      character.searchName(character);
+                      character.searchName();
                     },
                     icon: const Icon(Icons.search))
               ],
@@ -111,8 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       padding: const EdgeInsets.only(bottom: 10),
                       child: TextButton(
                         onPressed: () {
-                          character.info =
-                              character.showPersonDetail(index, character);
+                          character.info = character.showPersonDetail(index);
                           Navigator.push(
                               context,
                               MaterialPageRoute(

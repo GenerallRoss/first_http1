@@ -43,30 +43,30 @@ mixin _$Names on _Names, Store {
       AsyncAction('_Names.searchName', context: context);
 
   @override
-  Future<Names> searchName(Names character) {
-    return _$searchNameAsyncAction.run(() => super.searchName(character));
+  Future<bool> searchName() {
+    return _$searchNameAsyncAction.run(() => super.searchName());
   }
 
   late final _$_NamesActionController =
       ActionController(name: '_Names', context: context);
 
   @override
-  void getSearchedNames(List<Map<String, String>> response) {
+  void getSearchedNames(List<Map<String, String>> list) {
     final _$actionInfo =
         _$_NamesActionController.startAction(name: '_Names.getSearchedNames');
     try {
-      return super.getSearchedNames(response);
+      return super.getSearchedNames(list);
     } finally {
       _$_NamesActionController.endAction(_$actionInfo);
     }
   }
 
   @override
-  void setPersonDetail(Map<String, String> response) {
+  void setPersonDetail(Map<String, String> map) {
     final _$actionInfo =
         _$_NamesActionController.startAction(name: '_Names.setPersonDetail');
     try {
-      return super.setPersonDetail(response);
+      return super.setPersonDetail(map);
     } finally {
       _$_NamesActionController.endAction(_$actionInfo);
     }

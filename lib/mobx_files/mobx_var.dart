@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:dio/dio.dart';
+import 'package:first_http1/api.dart';
 import 'package:flutter/cupertino.dart';
 // ignore: depend_on_referenced_packages
 import 'package:mobx/mobx.dart';
@@ -51,29 +52,23 @@ abstract class _Names with Store {
   }
 
   @action
-  Future<Names> searchName(Names character) async {
+  Future<bool> searchName() async {
     try {
-      var dio = Dio();
-      final response = await dio
-          .get('https://swapi.dev/api/people/?search=${findController.text}');
-      if (response.statusCode == 200) {
+      var response = await APIsearch(findController);
+      if (response!.statusCode == 200) {
         names = convertList(response.data['results']);
         getSearchedNames(names);
       }
-      return character;
     } catch (e) {
       debugPrint(e.toString());
-      return character;
     }
+    return true;
   }
 
-  void getPersonDetails(Names character) async {
-    var dio = Dio();
-    var rng = Random(); // Рандомный id
-    int i = rng.nextInt(10) + 1;
+  void getPersonDetails() async {
     try {
-      var response = await dio.get('https://swapi.dev/api/people/$i');
-      if (response.statusCode == 200) {
+      var response = await APIgetPersonalDetails();
+      if (response!.statusCode == 200) {
         var t = convertList([response.data]);
         setPersonDetail(t[0]);
       }
@@ -83,10 +78,9 @@ abstract class _Names with Store {
   }
 
   void getAllNames() async {
-    var dio = Dio();
     try {
-      final response = await dio.get('https://swapi.dev/api/people/');
-      if (response.statusCode == 200) {
+      var response = await APIgetAllNames();
+      if (response!.statusCode == 200) {
         names = convertList(response.data['results']);
         getSearchedNames(names);
       }
@@ -95,7 +89,7 @@ abstract class _Names with Store {
     }
   }
 
-  PersonInfo showPersonDetail(int index, Names character) {
+  PersonInfo showPersonDetail(int index) {
     PersonInfo info = PersonInfo(
         names[index]['name'].toString(),
         names[index]['height'].toString(),
