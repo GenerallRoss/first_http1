@@ -1,6 +1,3 @@
-import 'dart:math';
-
-import 'package:dio/dio.dart';
 import 'package:first_http1/api.dart';
 import 'package:flutter/cupertino.dart';
 // ignore: depend_on_referenced_packages
