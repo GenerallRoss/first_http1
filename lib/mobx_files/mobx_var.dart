@@ -11,6 +11,9 @@ part 'mobx_var.g.dart';
 class Names = _Names with _$Names;
 
 abstract class _Names with Store {
+  final TextEditingController findController = TextEditingController();
+  PersonInfo info = PersonInfo.empty();
+
   @observable
   List<String> names = [];
 
@@ -19,7 +22,6 @@ abstract class _Names with Store {
   Person person = Person(name: '', height: '', mass: '');
 
   late Response dataResponse;
-  List<String> info = [];
 
   @action
   void getSearchedNames(Response response) {
@@ -37,14 +39,11 @@ abstract class _Names with Store {
   }
 
   @action
-  Future<Names> searchName(
-    TextEditingController _findController,
-    Names character,
-  ) async {
+  Future<Names> searchName(Names character) async {
     var dio = Dio();
     try {
       final response = await dio
-          .get('https://swapi.dev/api/people/?search=${_findController.text}');
+          .get('https://swapi.dev/api/people/?search=${findController.text}');
       if (response.statusCode == 200) {
         character.dataResponse = response;
         character.getSearchedNames(response);

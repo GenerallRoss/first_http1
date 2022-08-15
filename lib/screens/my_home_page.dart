@@ -14,9 +14,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final TextEditingController _findController = TextEditingController();
   final Names character = Names();
-  PersonInfo info = PersonInfo.empty();
 
   @override
   void initState() {
@@ -83,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   width: 200,
                   child: TextFormField(
                     autofocus: false,
-                    controller: _findController,
+                    controller: character.findController,
                     textInputAction: TextInputAction.done,
                     decoration: InputDecoration(
                         enabledBorder: OutlineInputBorder(
@@ -98,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 IconButton(
                     onPressed: () {
-                      character.searchName(_findController, character);
+                      character.searchName(character);
                     },
                     icon: const Icon(Icons.search))
               ],
@@ -116,12 +114,13 @@ class _MyHomePageState extends State<MyHomePage> {
                       padding: const EdgeInsets.only(bottom: 10),
                       child: TextButton(
                         onPressed: () {
-                          info = character.showPersonDetail(index, character);
+                          character.info =
+                              character.showPersonDetail(index, character);
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (BuildContext context) =>
-                                      PersonInfoScreen(info: info)));
+                                      PersonInfoScreen(info: character.info)));
                         },
                         child: Text(
                           character.names[index],
