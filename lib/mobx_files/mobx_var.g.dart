@@ -12,13 +12,13 @@ mixin _$Names on _Names, Store {
   late final _$namesAtom = Atom(name: '_Names.names', context: context);
 
   @override
-  List<String> get names {
+  List<Map<String, String>> get names {
     _$namesAtom.reportRead();
     return super.names;
   }
 
   @override
-  set names(List<String> value) {
+  set names(List<Map<String, String>> value) {
     _$namesAtom.reportWrite(value, super.names, () {
       super.names = value;
     });
@@ -51,7 +51,7 @@ mixin _$Names on _Names, Store {
       ActionController(name: '_Names', context: context);
 
   @override
-  void getSearchedNames(Response<dynamic> response) {
+  void getSearchedNames(List<Map<String, String>> response) {
     final _$actionInfo =
         _$_NamesActionController.startAction(name: '_Names.getSearchedNames');
     try {
@@ -62,7 +62,7 @@ mixin _$Names on _Names, Store {
   }
 
   @override
-  void setPersonDetail(Response<dynamic> response) {
+  void setPersonDetail(Map<String, String> response) {
     final _$actionInfo =
         _$_NamesActionController.startAction(name: '_Names.setPersonDetail');
     try {

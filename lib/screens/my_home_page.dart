@@ -15,7 +15,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    character.getAllNames(character);
+    character.getAllNames();
     super.initState();
   }
 
@@ -120,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       PersonInfoScreen(info: character.info)));
                         },
                         child: Text(
-                          character.names[index],
+                          "${character.names[index]['name']}",
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                               color: Color.fromARGB(255, 46, 46, 46)),

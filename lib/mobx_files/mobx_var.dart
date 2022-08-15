@@ -17,38 +17,48 @@ abstract class _Names with Store {
   PersonInfo info = PersonInfo.empty();
 
   @observable
-  List<String> names = [];
+  List<Map<String, String>> names = [];
 
   // Краткая информация о персонаже при показе случайного (обновляется автоматически)
   @observable
   Person person = Person(name: '', height: '', mass: '');
 
-  late Response dataResponse;
-
   @action
-  void getSearchedNames(Response response) {
-    names = response.data['results']
-        .map<String>((item) => item['name'].toString())
-        .toList();
+  void getSearchedNames(List<Map<String, String>> list) {
+    names = list;
   }
 
   @action
-  void setPersonDetail(Response response) {
+  void setPersonDetail(Map<String, String> map) {
     person = Person(
-        name: response.data['name'],
-        height: response.data['height'],
-        mass: response.data['mass']);
+        name: map['name'].toString(),
+        height: map['height'].toString(),
+        mass: map['mass'].toString());
+  }
+
+  List<Map<String, String>> convertList(List<dynamic> list) {
+    List<Map<String, String>> result = [];
+    for (int i = 0; i < list.length; i++) {
+      result.add({});
+      var element = list[i];
+      for (int n = 0; n < list[i].length; n++) {
+        String key = element.keys.toList()[n].toString();
+        String value = element[key].toString();
+        result[i][key] = value;
+      }
+    }
+    return result;
   }
 
   @action
   Future<Names> searchName(Names character) async {
-    var dio = Dio();
     try {
+      var dio = Dio();
       final response = await dio
           .get('https://swapi.dev/api/people/?search=${findController.text}');
       if (response.statusCode == 200) {
-        character.dataResponse = response;
-        character.getSearchedNames(response);
+        names = convertList(response.data['results']);
+        getSearchedNames(names);
       }
       return character;
     } catch (e) {
@@ -61,24 +71,24 @@ abstract class _Names with Store {
     var dio = Dio();
     var rng = Random(); // Рандомный id
     int i = rng.nextInt(10) + 1;
-    late final Response response;
     try {
-      response = await dio.get('https://swapi.dev/api/people/$i');
+      var response = await dio.get('https://swapi.dev/api/people/$i');
       if (response.statusCode == 200) {
-        character.setPersonDetail(response);
+        var t = convertList([response.data]);
+        setPersonDetail(t[0]);
       }
     } catch (e) {
       debugPrint(e.toString());
     }
   }
 
-  void getAllNames(Names character) async {
+  void getAllNames() async {
     var dio = Dio();
     try {
       final response = await dio.get('https://swapi.dev/api/people/');
       if (response.statusCode == 200) {
-        character.dataResponse = response;
-        character.getSearchedNames(response);
+        names = convertList(response.data['results']);
+        getSearchedNames(names);
       }
     } catch (e) {
       debugPrint(e.toString());
@@ -86,14 +96,13 @@ abstract class _Names with Store {
   }
 
   PersonInfo showPersonDetail(int index, Names character) {
-    var response = character.dataResponse.data['results'][index];
     PersonInfo info = PersonInfo(
-        response['name'].toString(),
-        response['height'].toString(),
-        response['mass'].toString(),
-        response['birth_year'].toString(),
-        response['gender'].toString(),
-        response['hair_color'].toString());
+        names[index]['name'].toString(),
+        names[index]['height'].toString(),
+        names[index]['mass'].toString(),
+        names[index]['birth_year'].toString(),
+        names[index]['gender'].toString(),
+        names[index]['hair_color'].toString());
     return info;
   }
 }
