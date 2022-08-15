@@ -39,6 +39,14 @@ mixin _$Names on _Names, Store {
     });
   }
 
+  late final _$searchNameAsyncAction =
+      AsyncAction('_Names.searchName', context: context);
+
+  @override
+  Future<Names> searchName(Names character) {
+    return _$searchNameAsyncAction.run(() => super.searchName(character));
+  }
+
   late final _$_NamesActionController =
       ActionController(name: '_Names', context: context);
 
@@ -56,7 +64,7 @@ mixin _$Names on _Names, Store {
   @override
   void setPersonDetail(Response<dynamic> response) {
     final _$actionInfo =
-        _$_NamesActionController.startAction(name: '_Names.setPersonalDetail');
+        _$_NamesActionController.startAction(name: '_Names.setPersonDetail');
     try {
       return super.setPersonDetail(response);
     } finally {

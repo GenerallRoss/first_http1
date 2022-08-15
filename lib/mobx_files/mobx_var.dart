@@ -2,12 +2,14 @@ import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+// ignore: depend_on_referenced_packages
 import 'package:mobx/mobx.dart';
 import '../classes/person.dart';
 import '../classes/person_info.dart';
 
 part 'mobx_var.g.dart';
 
+// ignore: library_private_types_in_public_api
 class Names = _Names with _$Names;
 
 abstract class _Names with Store {

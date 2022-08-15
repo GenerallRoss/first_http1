@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:mobx/mobx.dart';
-
-import '../classes/person_info.dart';
 import '../mobx_files/mobx_var.dart';
 import 'person_info_screen.dart';
 
