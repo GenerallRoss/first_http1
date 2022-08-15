@@ -1,6 +1,10 @@
+import 'dart:math';
+
 import 'package:dio/dio.dart';
-import 'package:first_http1/person.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:mobx/mobx.dart';
+import '../classes/person.dart';
+import '../classes/person_info.dart';
 
 part 'mobx_var.g.dart';
 
@@ -10,6 +14,7 @@ abstract class _Names with Store {
   @observable
   List<String> names = [];
 
+  // Краткая информация о персонаже при показе случайного (обновляется автоматически)
   @observable
   Person person = Person(name: '', height: '', mass: '');
 
@@ -29,5 +34,65 @@ abstract class _Names with Store {
         name: response.data['name'],
         height: response.data['height'],
         mass: response.data['mass']);
+  }
+
+  @action
+  Future<Names> searchName(
+    TextEditingController _findController,
+    Names character,
+  ) async {
+    var dio = Dio();
+    try {
+      final response = await dio
+          .get('https://swapi.dev/api/people/?search=${_findController.text}');
+      if (response.statusCode == 200) {
+        character.dataResponse = response;
+        character.getSearchedNames(response);
+      }
+      return character;
+    } catch (e) {
+      debugPrint(e.toString());
+      return character;
+    }
+  }
+
+  void getPersonDetails(Names character) async {
+    var dio = Dio();
+    var rng = Random(); // Рандомный id
+    int i = rng.nextInt(10) + 1;
+    late final Response response;
+    try {
+      response = await dio.get('https://swapi.dev/api/people/$i');
+      if (response.statusCode == 200) {
+        character.setPersonDetail(response);
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  void getAllNames(Names character) async {
+    var dio = Dio();
+    try {
+      final response = await dio.get('https://swapi.dev/api/people/');
+      if (response.statusCode == 200) {
+        character.dataResponse = response;
+        character.getSearchedNames(response);
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  PersonInfo showPersonDetail(int index, Names character) {
+    var response = character.dataResponse.data['results'][index];
+    PersonInfo info = PersonInfo(
+        response['name'].toString(),
+        response['height'].toString(),
+        response['mass'].toString(),
+        response['birth_year'].toString(),
+        response['gender'].toString(),
+        response['hair_color'].toString());
+    return info;
   }
 }

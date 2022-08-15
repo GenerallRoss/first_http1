@@ -1,12 +1,10 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mobx/mobx.dart';
 
+import '../classes/person_info.dart';
 import '../mobx_files/mobx_var.dart';
-import 'person_info.dart';
+import 'person_info_screen.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
@@ -18,65 +16,11 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _findController = TextEditingController();
   final Names character = Names();
-  List<String> info = [];
-
-  void showPersonDetail(int index) {
-    var response = character.dataResponse.data['results'][index];
-    info.clear();
-    info.add(response['name'].toString());
-    info.add(response['height'].toString());
-    info.add(response['mass'].toString());
-    info.add(response['birth_year'].toString());
-    info.add(response['gender'].toString());
-    info.add(response['hair_color'].toString());
-  }
-
-  void getPersonDetails() async {
-    var dio = Dio();
-    var rng = Random(); // Рандомный id
-    int i = rng.nextInt(10) + 1;
-    late final Response response;
-    try {
-      response = await dio.get('https://swapi.dev/api/people/$i');
-      if (response.statusCode == 200) {
-        character.setPersonDetail(response);
-      }
-    } catch (e) {
-      debugPrint(e.toString());
-    }
-  }
-
-  void getAllNames() async {
-    var dio = Dio();
-    try {
-      final response = await dio.get('https://swapi.dev/api/people/');
-      if (response.statusCode == 200) {
-        character.dataResponse = response;
-        character.getSearchedNames(response);
-      }
-    } catch (e) {
-      debugPrint(e.toString());
-    }
-  }
-
-  @action
-  void searchName() async {
-    var dio = Dio();
-    try {
-      final response = await dio
-          .get('https://swapi.dev/api/people/?search=${_findController.text}');
-      if (response.statusCode == 200) {
-        character.dataResponse = response;
-        character.getSearchedNames(response);
-      }
-    } catch (e) {
-      debugPrint(e.toString());
-    }
-  }
+  PersonInfo info = PersonInfo.empty();
 
   @override
   void initState() {
-    getAllNames();
+    character.getAllNames(character);
     super.initState();
   }
 
@@ -94,7 +38,9 @@ class _MyHomePageState extends State<MyHomePage> {
               borderRadius: BorderRadius.circular(10),
               color: Colors.blueAccent,
               child: MaterialButton(
-                onPressed: getPersonDetails,
+                onPressed: () {
+                  character.getPersonDetails(character);
+                },
                 child: const Text(
                   'Показать случайного персонажа',
                   style: TextStyle(color: Colors.white),
@@ -151,7 +97,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   width: 15,
                 ),
                 IconButton(
-                    onPressed: searchName, icon: const Icon(Icons.search))
+                    onPressed: () {
+                      character.searchName(_findController, character);
+                    },
+                    icon: const Icon(Icons.search))
               ],
             ),
             const SizedBox(
@@ -167,12 +116,12 @@ class _MyHomePageState extends State<MyHomePage> {
                       padding: const EdgeInsets.only(bottom: 10),
                       child: TextButton(
                         onPressed: () {
-                          showPersonDetail(index);
+                          info = character.showPersonDetail(index, character);
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (BuildContext context) =>
-                                      PersonInfo(info: info)));
+                                      PersonInfoScreen(info: info)));
                         },
                         child: Text(
                           character.names[index],
